@@ -1,0 +1,81 @@
+// Step 6: Full HD output (1920×1080), 16×9 grid layout
+// Configurable alpha for fill and outline separately
+// Produces high-resolution exports
+// This is the p5.js equivalent of looping-pattern-step6.py
+
+let canvasWidth = 1920;
+let canvasHeight = 1080;
+let cellWidth = 1920 / 16;
+let cellHeight = 1080 / 9;
+
+// Color palette - "twilight" inspired palette (16 colors)
+let palette = [
+  [255, 0, 255],    // Neon magenta
+  [0, 255, 255],    // Neon cyan
+  [255, 255, 0],    // Neon yellow
+  [255, 0, 128],    // Hot pink
+  [0, 255, 0],      // Neon green
+  [255, 50, 0],     // Neon orange
+  [138, 43, 226],   // Neon purple
+  [0, 191, 255]     // Electric blue
+];
+
+function setup() {
+  createCanvas(canvasWidth, canvasHeight);
+  noLoop();
+}
+
+function draw() {
+  background(0);
+  
+  let numCircles = 80;
+  
+  for (let i = 0; i < numCircles; i++) {
+    let x = (i / numCircles) * canvasWidth;
+    
+    // Three waves at different heights
+    let y1 = canvasHeight / 4 + sin(i * 0.6) * 75;
+    let y2 = canvasHeight / 2 + sin(i * 0.6) * 75;
+    let y3 = (canvasHeight / 4) * 3 + sin(i * 0.6) * 75;
+    
+    drawMultipleCircles(x, y1, 60, 16);
+    drawMultipleCircles(x, y2, 60, 16);
+    drawMultipleCircles(x, y3, 60, 16);
+  }
+}
+
+// Helper function to draw a single circle with fill and outline
+function drawCircle(x, y, diameter, fillColor, strokeColor) {
+  fill(fillColor);
+  stroke(strokeColor);
+  strokeWeight(1);
+  ellipse(x + diameter / 2, y + diameter / 2, diameter, diameter);
+}
+
+// Helper function to draw multiple circles in a circular pattern
+function drawMultipleCircles(x, y, diameter, number) {
+  // Calculate angle between each circle
+  let angle = TWO_PI / number;
+  
+  // Pick ONE color for this entire cluster based on x position
+  let clusterIndex = floor(x / 20) % palette.length;
+  let circleColor = palette[clusterIndex];
+  
+  for (let i = 0; i < number; i++) {
+    // Use sin and cos to position circles in a circle
+    let newX = sin(angle * i) * diameter / 5 + x;
+    let newY = cos(angle * i) * diameter / 5 + y;
+    
+    // All circles in this cluster use the SAME color
+    let fillColor = color(circleColor[0], circleColor[1], circleColor[2], 20);
+    let strokeColor = color(circleColor[0], circleColor[1], circleColor[2], 255);
+    drawCircle(newX, newY, diameter, fillColor, strokeColor);
+  }
+}
+
+// Press 's' to save the canvas as a high-resolution image
+function keyPressed() {
+  if (key === 's' || key === 'S') {
+    saveCanvas('myImage', 'png');
+  }
+}
